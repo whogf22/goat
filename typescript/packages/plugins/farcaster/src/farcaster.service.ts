@@ -20,7 +20,11 @@ export class FarcasterClient {
         description: "Get a cast by its URL or hash",
     })
     async getCast(params: GetCastParameters) {
-        return this.makeRequest(`/cast?identifier=${params.identifier}&type=${params.type}`);
+        const searchParams = new URLSearchParams({
+            identifier: params.identifier,
+            type: params.type,
+        });
+        return this.makeRequest(`/cast?${searchParams.toString()}`);
     }
 
     @Tool({

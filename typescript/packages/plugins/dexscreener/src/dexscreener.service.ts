@@ -21,7 +21,7 @@ export class DexscreenerService {
         description: "Fetch pairs by chainId and pairId from Dexscreener",
     })
     async getPairsByChainAndPair(parameters: GetPairsByChainAndPairParameters) {
-        const url = `${this.baseUrl}/pairs/${parameters.chainId}/${parameters.pairId}`;
+        const url = `${this.baseUrl}/pairs/${encodeURIComponent(parameters.chainId)}/${encodeURIComponent(parameters.pairId)}`;
         return this.fetchDexscreener(url, "fetch pairs");
     }
 
@@ -42,7 +42,7 @@ export class DexscreenerService {
         if (parameters.tokenAddresses.length > 30) {
             throw new Error("Maximum of 30 token addresses allowed per request");
         }
-        const addresses = parameters.tokenAddresses.join(",");
+        const addresses = parameters.tokenAddresses.map((addr) => encodeURIComponent(addr)).join(",");
         const url = `${this.baseUrl}/tokens/${addresses}`;
         return this.fetchDexscreener(url, "get token pairs");
     }

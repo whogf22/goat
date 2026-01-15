@@ -30,7 +30,8 @@ export class NansenService {
     })
     async getTokenDetails(parameters: GetTokenDetailsParams) {
         const { address } = parameters;
-        return this.fetchNansen(`/token?address=${address}`);
+        const queryParams = new URLSearchParams({ address });
+        return this.fetchNansen(`/token?${queryParams.toString()}`);
     }
 
     @Tool({
@@ -39,8 +40,8 @@ export class NansenService {
     })
     async getTokenTrades(parameters: GetTokenTradesParams) {
         const { address, start_date, end_date } = parameters;
-        const queryParams = `?address=${address}&start_date=${start_date}&end_date=${end_date}`;
-        return this.fetchNansen(`/token/dex_trades${queryParams}`);
+        const queryParams = new URLSearchParams({ address, start_date, end_date });
+        return this.fetchNansen(`/token/dex_trades?${queryParams.toString()}`);
     }
 
     @Tool({
@@ -49,8 +50,8 @@ export class NansenService {
     })
     async getNFTDetails(parameters: GetNFTDetailsParams) {
         const { token_address, nft_id } = parameters;
-        const queryParams = `?token_address=${token_address}&nft_id=${nft_id}`;
-        return this.fetchNansen(`/nft${queryParams}`);
+        const queryParams = new URLSearchParams({ token_address, nft_id });
+        return this.fetchNansen(`/nft?${queryParams.toString()}`);
     }
 
     @Tool({
@@ -59,8 +60,8 @@ export class NansenService {
     })
     async getNFTTrades(parameters: GetNFTTradesParams) {
         const { token_address, nft_id, start_date, end_date } = parameters;
-        const queryParams = `?token_address=${token_address}&nft_id=${nft_id}&start_date=${start_date}&end_date=${end_date}`;
-        return this.fetchNansen(`/nft/trades${queryParams}`);
+        const queryParams = new URLSearchParams({ token_address, nft_id, start_date, end_date });
+        return this.fetchNansen(`/nft/trades?${queryParams.toString()}`);
     }
 
     @Tool({
@@ -68,9 +69,11 @@ export class NansenService {
     })
     async getSmartMoneyStatus(parameters: GetSmartMoneyParams) {
         const { start_date, end_date, token_address } = parameters;
-        const queryParams = `?start_date=${start_date}&end_date=${end_date}`;
-        const tokenParam = token_address ? `&token_address=${token_address}` : "";
-        return this.fetchNansen(`/token_flows${queryParams}${tokenParam}`);
+        const queryParams = new URLSearchParams({ start_date, end_date });
+        if (token_address) {
+            queryParams.append("token_address", token_address);
+        }
+        return this.fetchNansen(`/token_flows?${queryParams.toString()}`);
     }
 
     @Tool({
@@ -79,8 +82,10 @@ export class NansenService {
     })
     async getTradingSignal(parameters: GetTradingSignalParams) {
         const { start_date, end_date, token_address } = parameters;
-        const queryParams = `?start_date=${start_date}&end_date=${end_date}`;
-        const tokenParam = token_address ? `&token_address=${token_address}` : "";
-        return this.fetchNansen(`/signals${queryParams}${tokenParam}`);
+        const queryParams = new URLSearchParams({ start_date, end_date });
+        if (token_address) {
+            queryParams.append("token_address", token_address);
+        }
+        return this.fetchNansen(`/signals?${queryParams.toString()}`);
     }
 }

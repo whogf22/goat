@@ -75,15 +75,18 @@ export class AlloraAPIClient {
             headers["x-api-key"] = this.apiKey;
         }
 
-        const response = await axios.get(url, { headers });
-        if (response.status >= 400) {
-            throw new Error(
-                `Allora plugin: error requesting price prediction: url=${url} status=${
-                    response.status
-                } body=${JSON.stringify(response.data, null, 4)}`,
-            );
+        try {
+            const response = await axios.get(url, { headers });
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                throw new Error(
+                    `Allora plugin: error requesting price prediction: url=${url} status=${
+                        error.response.status
+                    } body=${JSON.stringify(error.response.data, null, 4)}`,
+                );
+            }
+            throw error;
         }
-
-        return response.data;
     }
 }

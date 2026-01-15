@@ -18,9 +18,10 @@ export class JSONRpcService {
             const response = await fetch(url.toString(), {
                 method: "POST",
                 body: JSON.stringify(parameters),
-                headers: {},
+                headers: {
+                    "Content-Type": "application/json",
+                },
             });
-            console.log(response, "string");
             if (!response.ok) {
                 throw new Error(`Failed to fetch: ${response.statusText}`);
             }

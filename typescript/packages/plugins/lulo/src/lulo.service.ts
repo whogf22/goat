@@ -18,7 +18,15 @@ export class LuloService {
             }),
         });
 
+        if (!response.ok) {
+            throw new Error(`Failed to deposit USDC: ${response.status} ${response.statusText}`);
+        }
+
         const data = await response.json();
+
+        if (!data.transaction) {
+            throw new Error("Invalid response from Lulo API: missing transaction data");
+        }
 
         const tx = await walletClient.sendRawTransaction(data.transaction);
 
@@ -40,7 +48,15 @@ export class LuloService {
             }),
         });
 
+        if (!response.ok) {
+            throw new Error(`Failed to withdraw USDC: ${response.status} ${response.statusText}`);
+        }
+
         const data = await response.json();
+
+        if (!data.transaction) {
+            throw new Error("Invalid response from Lulo API: missing transaction data");
+        }
 
         const tx = await walletClient.sendRawTransaction(data.transaction);
 

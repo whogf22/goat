@@ -279,27 +279,29 @@ export class IonicService {
         const { fromAsset, toAsset, amount } = params;
         const chain = wallet.getChain();
 
-        // First withdraw the collateral
+        // Get configs for both assets
         const fromAssetConfig = await this.getAssetConfig(chain.id, fromAsset);
+        const toAssetConfig = await this.getAssetConfig(chain.id, toAsset);
 
-        // Withdraw collateral
-        const pool = await wallet.sendTransaction({
+        // Withdraw collateral from the source asset
+        const redeemTx = await wallet.sendTransaction({
             to: fromAssetConfig.address,
             abi: poolAbi,
             functionName: "redeemUnderlying",
             args: [BigInt(amount)],
         });
 
-        const supplynewcollateral = await wallet.sendTransaction({
-            to: fromAssetConfig.address,
+        // Supply to the destination asset using mint
+        const supplyNewCollateralTx = await wallet.sendTransaction({
+            to: toAssetConfig.address,
             abi: poolAbi,
-            functionName: "supplyAsset",
-            args: [toAsset, amount],
+            functionName: "mint",
+            args: [BigInt(amount)],
         });
 
         return {
-            poolTx: pool.hash,
-            supplyNewCollateralTx: supplynewcollateral.hash,
+            redeemTx: redeemTx.hash,
+            supplyNewCollateralTx: supplyNewCollateralTx.hash,
         };
     }
 }

@@ -17,7 +17,7 @@ export class OpenseaService {
         let nftCollectionStatistics: z.infer<typeof GetNftCollectionStatisticsResponseSchema>;
         try {
             const response = await fetch(
-                `https://api.opensea.io/api/v2/collections/${parameters.collectionSlug}/stats`,
+                `https://api.opensea.io/api/v2/collections/${encodeURIComponent(parameters.collectionSlug)}/stats`,
                 {
                     headers: {
                         accept: "application/json",
@@ -25,6 +25,10 @@ export class OpenseaService {
                     },
                 },
             );
+
+            if (!response.ok) {
+                throw new Error(`OpenSea API error: ${response.status} ${response.statusText}`);
+            }
 
             nftCollectionStatistics = (await response.json()) as z.infer<
                 typeof GetNftCollectionStatisticsResponseSchema
@@ -42,8 +46,12 @@ export class OpenseaService {
     async getNftSales(parameters: GetNftSalesParametersSchema) {
         let nftSales: z.infer<typeof GetNftSalesResponseSchema>;
         try {
+            const queryParams = new URLSearchParams({
+                event_type: "sale",
+                limit: "5",
+            });
             const response = await fetch(
-                `https://api.opensea.io/api/v2/events/collection/${parameters.collectionSlug}?event_type=sale&limit=5`,
+                `https://api.opensea.io/api/v2/events/collection/${encodeURIComponent(parameters.collectionSlug)}?${queryParams.toString()}`,
                 {
                     headers: {
                         accept: "application/json",
@@ -51,6 +59,10 @@ export class OpenseaService {
                     },
                 },
             );
+
+            if (!response.ok) {
+                throw new Error(`OpenSea API error: ${response.status} ${response.statusText}`);
+            }
 
             nftSales = (await response.json()) as z.infer<typeof GetNftSalesResponseSchema>;
         } catch (error) {

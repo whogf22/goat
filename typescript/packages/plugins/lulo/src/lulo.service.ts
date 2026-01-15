@@ -8,7 +8,11 @@ export class LuloService {
         description: "Deposit USDC into Lulo",
     })
     async depositUSDC(walletClient: SolanaWalletClient, parameters: DepositUSDCParameters) {
-        const response = await fetch(`https://blink.lulo.fi/actions?amount=${parameters.amount}&symbol=USDC`, {
+        const queryParams = new URLSearchParams({
+            amount: parameters.amount,
+            symbol: "USDC",
+        });
+        const response = await fetch(`https://blink.lulo.fi/actions?${queryParams.toString()}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -17,6 +21,10 @@ export class LuloService {
                 account: walletClient.getAddress(),
             }),
         });
+
+        if (!response.ok) {
+            throw new Error(`Lulo deposit failed: ${response.statusText}`);
+        }
 
         const data = await response.json();
 
@@ -30,15 +38,22 @@ export class LuloService {
         description: "Withdraw USDC from Lulo",
     })
     async withdrawUSDC(walletClient: SolanaWalletClient, parameters: WithdrawTokenParameters) {
-        const response = await fetch(`https://lulo.dial.to/api/actions/withdraw/usdc/${parameters.amount}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
+        const response = await fetch(
+            `https://lulo.dial.to/api/actions/withdraw/usdc/${encodeURIComponent(parameters.amount)}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    account: walletClient.getAddress(),
+                }),
             },
-            body: JSON.stringify({
-                account: walletClient.getAddress(),
-            }),
-        });
+        );
+
+        if (!response.ok) {
+            throw new Error(`Lulo withdrawal failed: ${response.statusText}`);
+        }
 
         const data = await response.json();
 

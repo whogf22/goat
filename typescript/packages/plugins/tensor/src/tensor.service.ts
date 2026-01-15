@@ -13,12 +13,17 @@ export class TensorService {
     async getNftInfo(parameters: GetNftInfoParameters) {
         let nftInfo: z.infer<typeof getNftInfoResponseSchema>;
         try {
-            const response = await fetch(`https://api.mainnet.tensordev.io/api/v1/mint?mints=${parameters.mintHash}`, {
+            const queryParams = new URLSearchParams({ mints: parameters.mintHash });
+            const response = await fetch(`https://api.mainnet.tensordev.io/api/v1/mint?${queryParams.toString()}`, {
                 headers: {
                     "Content-Type": "application/json",
                     "x-tensor-api-key": this.apiKey,
                 },
             });
+
+            if (!response.ok) {
+                throw new Error(`Tensor API error: ${response.status} ${response.statusText}`);
+            }
 
             nftInfo = (await response.json()) as z.infer<typeof getNftInfoResponseSchema>;
         } catch (error) {
@@ -58,8 +63,11 @@ export class TensorService {
                 },
             });
 
+            if (!response.ok) {
+                throw new Error(`Tensor API error: ${response.status} ${response.statusText}`);
+            }
+
             data = (await response.json()) as z.infer<typeof getBuyListingTransactionResponseSchema>;
-            console.log(data);
         } catch (error) {
             throw new Error(`Failed to get buy listing transaction: ${error}`);
         }

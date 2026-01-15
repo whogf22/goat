@@ -116,7 +116,7 @@ export class SuperfluidService {
             address: this.GDA_FORWARDER_ADDRESS,
             abi: GDA_FORWARDER_ABI,
             functionName: "isMemberConnected",
-            args: [parameters.memberAddr],
+            args: [parameters.poolAddress, parameters.memberAddr],
         });
         return result.value;
     }
@@ -128,7 +128,7 @@ export class SuperfluidService {
     async getNetFlow(walletClient: EVMWalletClient, parameters: GetNetFlowRateParameters) {
         const result = await walletClient.read({
             address: this.GDA_FORWARDER_ADDRESS,
-            abi: POOL_ABI,
+            abi: GDA_FORWARDER_ABI,
             functionName: "getNetFlow",
             args: [parameters.token, parameters.memberAddr],
         });
